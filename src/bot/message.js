@@ -1,6 +1,11 @@
 const Users = require("../model/users");
 const { bot } = require("./bot");
-const { start, chooseLanguage, requestContact } = require("./helper/start");
+const {
+  start,
+  chooseLanguage,
+  requestContact,
+  logOut,
+} = require("./helper/start");
 const { sendContact, sendVideoLesson } = require("./helper/send-contact-video");
 const {
   sendSubscription,
@@ -19,7 +24,11 @@ bot.on("message", async (msg) => {
     start(msg);
   }
 
-  if (findUser && text != "/start" && text != "🔙 Menu") {
+  if (text == "/logout") {
+    logOut(msg);
+  }
+
+  if (findUser && text != "/start" && text != "🔙 Menu" && text != "/logout") {
     if (findUser?.action == "choose_language") {
       chooseLanguage(msg);
     }

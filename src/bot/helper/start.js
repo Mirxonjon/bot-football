@@ -20,9 +20,7 @@ const start = async (msg) => {
 
     bot.sendMessage(
       chatId,
-      checkUser.language == "uz"
-        ? `Menyuni tanlang`
-        : `Выберите меню`,
+      checkUser.language == "uz" ? `Menyuni tanlang` : `Выберите меню`,
       {
         reply_markup: {
           keyboard: checkUser.admin
@@ -202,8 +200,33 @@ const requestContact = async (msg) => {
   }
 };
 
+const logOut = async (msg) => {
+  const chatId = msg.chat.id;
+  const userId = msg.from.id;
+
+  try {
+    const user = await Users.findOneAndDelete({ chat_id: userId });
+
+    if (user) {
+      await bot.sendMessage(
+        chatId,
+        "✅ Sizning hisobingiz muvaffaqiyatli o‘chirildi."
+      );
+    } else {
+      await bot.sendMessage(chatId, "ℹ️ Siz avval ro‘yxatdan o‘tmagansiz.");
+    }
+  } catch (err) {
+    console.error("Logout error:", err);
+    await bot.sendMessage(
+      chatId,
+      "❌ Xatolik yuz berdi. Iltimos, keyinroq urinib ko‘ring."
+    );
+  }
+};
+
 module.exports = {
   start,
   chooseLanguage,
   requestContact,
+  logOut,
 };
