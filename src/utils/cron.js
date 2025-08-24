@@ -1,13 +1,16 @@
 const cron = require("node-cron");
 const Users = require("../model/users"); // sizdagi Users model
-const {bot} = require("../bot/bot"); // bot instance
+const { bot } = require("../bot/bot"); // bot instance
 const { GROUP_ID } = process.env; // .env da group id bo‘lsin
 
 // HAR 5 DАQIQАDА ISHLAYDIGAN CRON
-cron.schedule("*/1 * * * *", async () => {
+cron.schedule("*/5 * * * *", async () => {
   try {
     const users = await Users.find({ access: true, join: false }).lean();
-console.log("CRON ishga tushdi (1 daqiqa) - Foydalanuvchilar:", users.length);
+    console.log(
+      "CRON ishga tushdi (1 daqiqa) - Foydalanuvchilar:",
+      users.length
+    );
     for (const user of users) {
       try {
         const invite = await bot.createChatInviteLink(GROUP_ID, {
@@ -32,7 +35,7 @@ console.log("CRON ishga tushdi (1 daqiqa) - Foydalanuvchilar:", users.length);
   }
 });
 // "5 0 * * *"
-cron.schedule("*/1 * * * *", async () => {
+cron.schedule("5 0 * * *", async () => {
   try {
     console.log("🚀 CRON ishga tushdi (00:05)");
 
@@ -51,7 +54,7 @@ cron.schedule("*/1 * * * *", async () => {
       join: true,
       subscriptionEnd: { $gte: startOfYesterday, $lte: endOfYesterday },
     }).lean();
-      console.log(`Kecha tugagan obunachilar soni: ${expiredUsers.length}`);
+    console.log(`Kecha tugagan obunachilar soni: ${expiredUsers.length}`);
 
     for (const user of expiredUsers) {
       try {
@@ -72,5 +75,65 @@ cron.schedule("*/1 * * * *", async () => {
     }
   } catch (e) {
     console.error("CRON xato:", e.message);
+  }
+});
+
+cron.schedule("30 18 * * *", async () => {
+  try {
+    console.log("⏰ node-cron ishladi - obuna eslatmalari yuborilmoqda...");
+
+    const users = await Users.find({
+      subscriptionEnd: { $exists: true },
+    }).lean();
+    const now = new Date();
+
+    for (let user of users) {
+      if (!user.subscriptionEnd) continue;
+
+      const endDate = new Date(user.subscriptionEnd);
+      const diffDays = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
+
+      let textUz, textRu;
+
+      if (diffDays === 5) {
+        textUz = `Qadrli foydalanuvchi! 🤔
+Obunangiz tugashiga 5 kun qoldi.`;
+
+        textRu = `Уважаемый пользователь! 🤔
+До окончания вашей подписки осталось 5 дней.`;
+      }
+
+      if (diffDays === 3) {
+        textUz = `Hurmatli obunachimiz! 🥰
+Obunangiz tugashiga 3 kun qoldi. 
+Xizmatlardan uzluksiz foydalanish uchun obunani davom ettiring! 🔄`;
+
+        textRu = `Дорогой подписчик! 🥰
+До окончания вашей подписки осталось 3 дня. 
+Продлите подписку, чтобы пользоваться сервисом без перерывов! 🔄`;
+      }
+
+      if (diffDays === 1) {
+        textUz = `❗️Diqqat!
+Obunangiz tugashiga atigi 1 kun qoldi. 
+Xizmatdan uzilib qolmaslik uchun darhol obunani davom ettiring va yana 1 oy davomida foydalanishda davom eting! ⏳`;
+
+        textRu = `❗️Внимание!
+До окончания вашей подписки остался всего 1 день. 
+Продлите подписку прямо сейчас, чтобы не потерять доступ и пользоваться сервисом ещё месяц! ⏳`;
+      }
+
+      if (textUz && textRu) {
+        await bot.sendMessage(
+          user.chat_id,
+          user.language === "uz" ? textUz : textRu
+        );
+        console.log(
+          `📩 Eslatma yuborildi: ${user.chat_id} (${diffDays} kun qoldi)`
+        );
+      }
+    }
+  } catch (error) {
+    console.error("❌ node-cron xatosi:", error.message);
   }
 });
