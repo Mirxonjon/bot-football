@@ -79,7 +79,7 @@ const chooseSubscription = async (query) => {
   const messageId = query.message.message_id;
 
   let user = await Users.findOne({ chat_id: chatId }).lean();
-  let admin = await Users.findOne({ username: "mirxonjon" }).lean();
+  let admin = await Users.findOne({ username: "mirjalolborataliyev" }).lean();
 
   const lang = user?.language || "uz";
 
@@ -202,7 +202,9 @@ const handleUserPaymentCheck = async (msg) => {
   }
 
   // Admin userni topamiz (username orqali)
-  const adminUser = await Users.findOne({ username: "mirxonjon" }).lean();
+  const adminUser = await Users.findOne({
+    username: "mirjalolborataliyev",
+  }).lean();
   //   if (!adminUser) {
   //     return bot.sendMessage(chatId, "❌ Admin topilmadi.");
   //   }

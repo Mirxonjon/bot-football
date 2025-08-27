@@ -13,7 +13,7 @@ const editCard = async (msg) => {
   let user = await Users.findOne({ chat_id: chatId }).lean();
   console.log("user", user);
 
-  if (user?.username == "mirxonjon") {
+  if (user?.username == "mirjalolborataliyev") {
     user.action = "edit_card";
     await Users.findByIdAndUpdate(user._id, user, { new: true });
 
@@ -78,7 +78,7 @@ const editedCard = async (msg) => {
       }
     );
   } else {
-    if (user?.username == "mirxonjon") {
+    if (user?.username == "mirjalolborataliyev") {
       user.action = "menu";
       user.cardNumber = text;
       await Users.findByIdAndUpdate(user._id, user, { new: true });

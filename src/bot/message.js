@@ -47,7 +47,7 @@ bot.on("message", async (msg) => {
       sendVideoLesson(msg);
     }
 
-    if (text == "🫂 Guruhga qo‘shilish!" || text == "👥 Вступить в группу!") {
+    if (text == "👥 Guruhga qo‘shilish!" || text == "👥 Вступить в группу!") {
       sendSubscription(msg);
     }
     if (text == "Karta" || text == "Карта") {

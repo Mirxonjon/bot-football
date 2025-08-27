@@ -126,7 +126,7 @@ const requestContact = async (msg) => {
       phonetext.length >= 13
     ) {
       const numbers = ["998933843484"];
-      let usersAll = ["mirxonjon"];
+      let usersAll = ["mirxonjon", "mirjalolborataliyev"];
 
       user.phone = phonetext;
       // user.admin = phonetext.includes('998981888857') ? phonetext.includes('998981888857') : phonetext.includes('998777773351')\
